@@ -6,6 +6,8 @@ on:
     - cron: "0 7 * * *"
     # Every day at 07:00 JST (22:00 UTC previous day) - morning refresh
     - cron: "0 22 * * *"
+    # Every day at 21:00 JST (12:00 UTC) - evening refresh
+    - cron: "0 12 * * *"
   workflow_dispatch:
 
 jobs:
