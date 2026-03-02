@@ -80,6 +80,9 @@ export function ComparePageClient({ players }: Props) {
         <p className="mt-1 text-sm text-muted-foreground">
           Select up to 4 players to compare their stats side by side
         </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          OWS = Offensive Win Shares / DWS = Defensive Win Shares / WS = Total Win Shares (estimated wins contributed)
+        </p>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">

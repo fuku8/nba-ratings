@@ -86,7 +86,10 @@ export default async function TeamPage({ params }: Props) {
       </div>
 
       <div>
-        <h2 className="mb-3 text-lg font-semibold">Roster</h2>
+        <h2 className="mb-2 text-lg font-semibold">Roster</h2>
+        <p className="mb-3 text-xs text-muted-foreground">
+          OWS = Offensive Win Shares / DWS = Defensive Win Shares / WS = Total Win Shares (estimated wins contributed)
+        </p>
         <PlayerRatingsTable players={players} showTeam={false} />
       </div>
     </div>

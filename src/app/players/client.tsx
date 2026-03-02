@@ -38,7 +38,10 @@ export function PlayersPageClient({ players }: Props) {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">All Players</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Individual net ratings for all NBA players
+          Win Shares for all NBA players
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          OWS = Offensive Win Shares / DWS = Defensive Win Shares / WS = Total Win Shares (estimated wins contributed)
         </p>
       </div>
 
