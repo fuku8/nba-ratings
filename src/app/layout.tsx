@@ -28,7 +28,7 @@ function Footer() {
   return (
     <footer className="mt-12 border-t border-border/50 py-6 text-center text-xs text-muted-foreground">
       <p>
-        Data from NBA-Rating-Visualizer (Basketball Reference)
+        Data from Basketball Reference
         {lastUpdated && <span> &middot; Last updated: {lastUpdated} JST</span>}
       </p>
     </footer>
