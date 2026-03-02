@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const paths = ["/", "/players", "/search", "/compare"];
+  const paths = ["/", "/players", "/search", "/compare", "/team/[teamId]"];
   for (const path of paths) {
     revalidatePath(path);
   }

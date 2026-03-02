@@ -77,6 +77,14 @@ function CustomDot(props: {
 }
 
 export function RatingScatterChart({ teams }: Props) {
+  if (teams.length === 0) {
+    return (
+      <div className="flex h-[420px] items-center justify-center text-sm text-muted-foreground">
+        No team data available.
+      </div>
+    );
+  }
+
   const avgOff = teams.reduce((s, t) => s + t.offRating, 0) / teams.length;
   const avgDef = teams.reduce((s, t) => s + t.defRating, 0) / teams.length;
 

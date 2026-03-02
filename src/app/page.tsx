@@ -10,6 +10,17 @@ export const revalidate = 3600;
 export default async function HomePage() {
   const teams = await getTeamRatings();
 
+  if (teams.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold tracking-tight">Team Ratings</h1>
+        <p className="text-sm text-muted-foreground">
+          No team data is available right now.
+        </p>
+      </div>
+    );
+  }
+
   const bestOff = [...teams].sort((a, b) => b.offRating - a.offRating)[0];
   const bestDef = [...teams].sort((a, b) => a.defRating - b.defRating)[0];
   const bestNet = [...teams].sort((a, b) => b.netRating - a.netRating)[0];
