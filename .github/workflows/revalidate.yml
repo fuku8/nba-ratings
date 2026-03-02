@@ -1,4 +1,4 @@
-name: Revalidate NBA Data
+name: Update NBA Data
 
 on:
   schedule:
@@ -9,19 +9,39 @@ on:
   workflow_dispatch:
 
 jobs:
-  revalidate:
+  update-data:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger revalidation
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch latest NBA data
+        run: node scripts/fetch-data.mjs
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet data/ && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push updated data
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add data/
+          git commit -m "Auto-update NBA data [skip ci]"
+          git push
+
+      - name: Trigger Vercel revalidation
+        if: vars.SITE_URL != ''
         run: |
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
             -X POST \
             -H "Authorization: Bearer ${{ secrets.REVALIDATION_TOKEN }}" \
             "${{ vars.SITE_URL }}/api/revalidate")
-
-          echo "Status: $RESPONSE"
-          if [ "$RESPONSE" -ne 200 ]; then
-            echo "Revalidation failed with status $RESPONSE"
-            exit 1
-          fi
-          echo "Revalidation successful"
+          echo "Revalidation status: $RESPONSE"
