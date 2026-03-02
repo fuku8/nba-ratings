@@ -3,7 +3,6 @@ import { getTeamRatings, getPlayerRatings } from "@/lib/nba-api";
 import { PlayerRatingsTable } from "@/components/player-ratings-table";
 import { StatCard } from "@/components/stat-card";
 import { NBA_TEAMS } from "@/lib/types";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -15,21 +14,22 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { teamId } = await params;
-  const teams = await getTeamRatings();
-  const team = teams.find((t) => t.teamId.toString() === teamId);
+  const abbr = teamId.toUpperCase();
+  const teamInfo = NBA_TEAMS[abbr];
   return {
-    title: team ? team.teamName : "Team Details",
+    title: teamInfo ? teamInfo.name : "Team Details",
   };
 }
 
 export default async function TeamPage({ params }: Props) {
   const { teamId } = await params;
+  const abbr = teamId.toUpperCase();
   const [teams, allPlayers] = await Promise.all([
     getTeamRatings(),
-    getPlayerRatings(Number(teamId)),
+    getPlayerRatings(abbr),
   ]);
 
-  const team = teams.find((t) => t.teamId.toString() === teamId);
+  const team = teams.find((t) => t.teamAbbreviation === abbr);
   const players = allPlayers.filter((p) => p.gp >= 5);
   const teamInfo = team ? NBA_TEAMS[team.teamAbbreviation] : null;
 
@@ -63,14 +63,6 @@ export default async function TeamPage({ params }: Props) {
         </div>
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{team.teamName}</h1>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              {team.wins}-{team.losses}
-            </span>
-            <Badge variant="outline" className="text-xs">
-              {team.pace.toFixed(1)} Pace
-            </Badge>
-          </div>
         </div>
       </div>
 

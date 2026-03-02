@@ -12,7 +12,7 @@ import {
 import { PlayerRating, NBA_TEAMS } from "@/lib/types";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
-type SortKey = "playerName" | "teamAbbreviation" | "gp" | "min" | "offRating" | "defRating" | "netRating" | "pie";
+type SortKey = "playerName" | "teamAbbreviation" | "gp" | "ows" | "dws" | "ws";
 
 interface Props {
   players: PlayerRating[];
@@ -20,7 +20,7 @@ interface Props {
 }
 
 export function PlayerRatingsTable({ players, showTeam = true }: Props) {
-  const [sortKey, setSortKey] = useState<SortKey>("netRating");
+  const [sortKey, setSortKey] = useState<SortKey>("ws");
   const [sortAsc, setSortAsc] = useState(false);
 
   const sorted = [...players].sort((a, b) => {
@@ -37,7 +37,7 @@ export function PlayerRatingsTable({ players, showTeam = true }: Props) {
       setSortAsc(!sortAsc);
     } else {
       setSortKey(key);
-      setSortAsc(key === "playerName" || key === "teamAbbreviation" || key === "defRating");
+      setSortAsc(key === "playerName" || key === "teamAbbreviation");
     }
   }
 
@@ -54,11 +54,9 @@ export function PlayerRatingsTable({ players, showTeam = true }: Props) {
     { key: "playerName", label: "Player", align: "left" },
     ...(showTeam ? [{ key: "teamAbbreviation" as SortKey, label: "Team", align: "left" as const }] : []),
     { key: "gp", label: "GP" },
-    { key: "min", label: "MIN" },
-    { key: "offRating", label: "ORtg" },
-    { key: "defRating", label: "DRtg" },
-    { key: "netRating", label: "NRtg" },
-    { key: "pie", label: "PIE%" },
+    { key: "ows", label: "OWS" },
+    { key: "dws", label: "DWS" },
+    { key: "ws", label: "WS" },
   ];
 
   return (
@@ -85,7 +83,7 @@ export function PlayerRatingsTable({ players, showTeam = true }: Props) {
           {sorted.map((player, i) => {
             const teamInfo = NBA_TEAMS[player.teamAbbreviation];
             return (
-              <TableRow key={player.playerId} className="transition-colors hover:bg-accent/50">
+              <TableRow key={`${player.playerName}-${player.teamAbbreviation}`} className="transition-colors hover:bg-accent/50">
                 <TableCell className="text-center text-xs text-muted-foreground">
                   {i + 1}
                 </TableCell>
@@ -104,27 +102,14 @@ export function PlayerRatingsTable({ players, showTeam = true }: Props) {
                   </TableCell>
                 )}
                 <TableCell className="text-right tabular-nums text-sm">{player.gp}</TableCell>
-                <TableCell className="text-right tabular-nums text-sm">{player.min}</TableCell>
                 <TableCell className="text-right tabular-nums text-sm font-medium">
-                  {player.offRating.toFixed(1)}
+                  {player.ows.toFixed(1)}
                 </TableCell>
                 <TableCell className="text-right tabular-nums text-sm font-medium">
-                  {player.defRating.toFixed(1)}
+                  {player.dws.toFixed(1)}
                 </TableCell>
-                <TableCell
-                  className={`text-right tabular-nums text-sm font-bold ${
-                    player.netRating > 0
-                      ? "text-[var(--color-positive)]"
-                      : player.netRating < 0
-                        ? "text-[var(--color-negative)]"
-                        : ""
-                  }`}
-                >
-                  {player.netRating > 0 ? "+" : ""}
-                  {player.netRating.toFixed(1)}
-                </TableCell>
-                <TableCell className="text-right tabular-nums text-sm text-muted-foreground">
-                  {player.pie.toFixed(1)}
+                <TableCell className="text-right tabular-nums text-sm font-bold text-[var(--color-positive)]">
+                  {player.ws.toFixed(1)}
                 </TableCell>
               </TableRow>
             );

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -13,7 +12,7 @@ import {
 import { TeamRating, NBA_TEAMS } from "@/lib/types";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
-type SortKey = "teamName" | "wins" | "losses" | "offRating" | "defRating" | "netRating" | "pace";
+type SortKey = "teamName" | "offRating" | "defRating" | "netRating";
 
 interface Props {
   teams: TeamRating[];
@@ -52,12 +51,9 @@ export function TeamRatingsTable({ teams }: Props) {
 
   const columns: { key: SortKey; label: string; align?: "left" | "right" }[] = [
     { key: "teamName", label: "Team", align: "left" },
-    { key: "wins", label: "W" },
-    { key: "losses", label: "L" },
     { key: "offRating", label: "ORtg" },
     { key: "defRating", label: "DRtg" },
     { key: "netRating", label: "NRtg" },
-    { key: "pace", label: "Pace" },
   ];
 
   return (
@@ -85,17 +81,14 @@ export function TeamRatingsTable({ teams }: Props) {
             const teamInfo = NBA_TEAMS[team.teamAbbreviation];
             return (
               <TableRow
-                key={team.teamId}
+                key={team.teamAbbreviation}
                 className="group transition-colors hover:bg-accent/50"
               >
                 <TableCell className="text-center text-xs text-muted-foreground">
                   {i + 1}
                 </TableCell>
                 <TableCell>
-                  <Link
-                    href={`/team/${team.teamId}`}
-                    className="flex items-center gap-2 group-hover:underline"
-                  >
+                  <span className="flex items-center gap-2">
                     <span
                       className="inline-block h-2.5 w-2.5 rounded-full"
                       style={{ backgroundColor: teamInfo?.darkColor || "#888" }}
@@ -104,10 +97,8 @@ export function TeamRatingsTable({ teams }: Props) {
                     <span className="text-xs text-muted-foreground">
                       {team.teamAbbreviation}
                     </span>
-                  </Link>
+                  </span>
                 </TableCell>
-                <TableCell className="text-right tabular-nums text-sm">{team.wins}</TableCell>
-                <TableCell className="text-right tabular-nums text-sm">{team.losses}</TableCell>
                 <TableCell className="text-right tabular-nums text-sm font-medium">
                   {team.offRating.toFixed(1)}
                 </TableCell>
@@ -125,9 +116,6 @@ export function TeamRatingsTable({ teams }: Props) {
                 >
                   {team.netRating > 0 ? "+" : ""}
                   {team.netRating.toFixed(1)}
-                </TableCell>
-                <TableCell className="text-right tabular-nums text-sm text-muted-foreground">
-                  {team.pace.toFixed(1)}
                 </TableCell>
               </TableRow>
             );

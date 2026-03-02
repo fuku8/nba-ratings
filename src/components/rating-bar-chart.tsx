@@ -29,9 +29,6 @@ function CustomTooltip({
   return (
     <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-xl">
       <p className="text-sm font-semibold">{team.teamName}</p>
-      <p className="mt-0.5 text-xs text-muted-foreground">
-        Record: {team.wins}-{team.losses}
-      </p>
       <p className="mt-1 text-xs">
         NRtg:{" "}
         <span
@@ -82,7 +79,7 @@ export function RatingBarChart({ teams }: Props) {
         <Bar dataKey="netRating" radius={[0, 4, 4, 0]} maxBarSize={18}>
           {sorted.map((team) => (
             <Cell
-              key={team.teamId}
+              key={team.teamAbbreviation}
               fill={
                 team.netRating > 0
                   ? "var(--color-positive)"

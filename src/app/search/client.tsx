@@ -17,7 +17,7 @@ export function SearchPageClient({ players }: Props) {
     const q = query.toLowerCase();
     return players
       .filter((p) => p.playerName.toLowerCase().includes(q))
-      .sort((a, b) => b.netRating - a.netRating)
+      .sort((a, b) => b.ws - a.ws)
       .slice(0, 30);
   }, [players, query]);
 
@@ -26,7 +26,7 @@ export function SearchPageClient({ players }: Props) {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Player Search</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Search NBA players by name to view their ratings
+          Search NBA players by name to view their stats
         </p>
       </div>
 
@@ -53,7 +53,7 @@ export function SearchPageClient({ players }: Props) {
             const teamInfo = NBA_TEAMS[player.teamAbbreviation];
             return (
               <div
-                key={player.playerId}
+                key={`${player.playerName}-${player.teamAbbreviation}`}
                 className="group rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md"
               >
                 <div className="flex items-start justify-between">
@@ -69,23 +69,15 @@ export function SearchPageClient({ players }: Props) {
                       </span>
                     </div>
                   </div>
-                  <span
-                    className={`rounded-lg px-2 py-1 text-sm font-bold tabular-nums ${
-                      player.netRating > 0
-                        ? "bg-[var(--color-positive)]/10 text-[var(--color-positive)]"
-                        : "bg-[var(--color-negative)]/10 text-[var(--color-negative)]"
-                    }`}
-                  >
-                    {player.netRating > 0 ? "+" : ""}
-                    {player.netRating.toFixed(1)}
+                  <span className="rounded-lg px-2 py-1 text-sm font-bold tabular-nums bg-[var(--color-positive)]/10 text-[var(--color-positive)]">
+                    {player.ws.toFixed(1)}
                   </span>
                 </div>
-                <div className="mt-3 grid grid-cols-4 gap-2">
+                <div className="mt-3 grid grid-cols-3 gap-2">
                   {[
-                    { label: "ORtg", value: player.offRating.toFixed(1) },
-                    { label: "DRtg", value: player.defRating.toFixed(1) },
+                    { label: "OWS", value: player.ows.toFixed(1) },
+                    { label: "DWS", value: player.dws.toFixed(1) },
                     { label: "GP", value: player.gp.toString() },
-                    { label: "PIE", value: `${player.pie.toFixed(1)}%` },
                   ].map((stat) => (
                     <div key={stat.label} className="text-center">
                       <p className="text-[10px] font-medium text-muted-foreground">{stat.label}</p>

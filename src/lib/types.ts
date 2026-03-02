@@ -1,36 +1,18 @@
 export interface TeamRating {
-  teamId: number;
   teamName: string;
   teamAbbreviation: string;
-  wins: number;
-  losses: number;
   offRating: number;
   defRating: number;
   netRating: number;
-  pace: number;
 }
 
 export interface PlayerRating {
-  playerId: number;
   playerName: string;
-  teamId: number;
   teamAbbreviation: string;
-  age: number;
   gp: number;
-  min: number;
-  offRating: number;
-  defRating: number;
-  netRating: number;
-  pie: number;
-}
-
-export interface NBAApiResponse {
-  resource: string;
-  resultSets: {
-    name: string;
-    headers: string[];
-    rowSet: (string | number)[][];
-  }[];
+  ows: number;
+  dws: number;
+  ws: number;
 }
 
 export const NBA_TEAMS: Record<string, { name: string; color: string; darkColor: string }> = {
@@ -64,4 +46,39 @@ export const NBA_TEAMS: Record<string, { name: string; color: string; darkColor:
   TOR: { name: "Toronto Raptors", color: "#CE1141", darkColor: "#D42E56" },
   UTA: { name: "Utah Jazz", color: "#002B5C", darkColor: "#004A99" },
   WAS: { name: "Washington Wizards", color: "#002B5C", darkColor: "#004A99" },
+};
+
+// Team name → abbreviation mapping
+export const TEAM_NAME_TO_ABBR: Record<string, string> = {
+  "Atlanta Hawks": "ATL",
+  "Boston Celtics": "BOS",
+  "Brooklyn Nets": "BKN",
+  "Charlotte Hornets": "CHA",
+  "Chicago Bulls": "CHI",
+  "Cleveland Cavaliers": "CLE",
+  "Dallas Mavericks": "DAL",
+  "Denver Nuggets": "DEN",
+  "Detroit Pistons": "DET",
+  "Golden State Warriors": "GSW",
+  "Houston Rockets": "HOU",
+  "Indiana Pacers": "IND",
+  "LA Clippers": "LAC",
+  "Los Angeles Clippers": "LAC",
+  "Los Angeles Lakers": "LAL",
+  "Memphis Grizzlies": "MEM",
+  "Miami Heat": "MIA",
+  "Milwaukee Bucks": "MIL",
+  "Minnesota Timberwolves": "MIN",
+  "New Orleans Pelicans": "NOP",
+  "New York Knicks": "NYK",
+  "Oklahoma City Thunder": "OKC",
+  "Orlando Magic": "ORL",
+  "Philadelphia 76ers": "PHI",
+  "Phoenix Suns": "PHX",
+  "Portland Trail Blazers": "POR",
+  "Sacramento Kings": "SAC",
+  "San Antonio Spurs": "SAS",
+  "Toronto Raptors": "TOR",
+  "Utah Jazz": "UTA",
+  "Washington Wizards": "WAS",
 };

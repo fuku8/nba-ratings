@@ -33,7 +33,7 @@ export function ComparePageClient({ players }: Props) {
       .filter(
         (p) =>
           p.playerName.toLowerCase().includes(q) &&
-          !selected.some((s) => s.playerId === p.playerId)
+          !selected.some((s) => s.playerName === p.playerName && s.teamAbbreviation === p.teamAbbreviation)
       )
       .slice(0, 8);
   }, [players, searchQuery, selected]);
@@ -45,24 +45,22 @@ export function ComparePageClient({ players }: Props) {
     }
   }
 
-  function removePlayer(playerId: number) {
-    setSelected(selected.filter((p) => p.playerId !== playerId));
+  function removePlayer(index: number) {
+    setSelected(selected.filter((_, i) => i !== index));
   }
 
   const radarData = useMemo(() => {
     if (selected.length === 0) return [];
     const allPlayers = players.filter((p) => p.gp >= 20);
-    const maxOff = Math.max(...allPlayers.map((p) => p.offRating));
-    const minDef = Math.min(...allPlayers.map((p) => p.defRating));
-    const maxMin = Math.max(...allPlayers.map((p) => p.min));
-    const maxPie = Math.max(...allPlayers.map((p) => p.pie));
+    const maxOws = Math.max(...allPlayers.map((p) => p.ows));
+    const maxDws = Math.max(...allPlayers.map((p) => p.dws));
+    const maxWs = Math.max(...allPlayers.map((p) => p.ws));
     const maxGp = Math.max(...allPlayers.map((p) => p.gp));
 
     const metrics = [
-      { key: "ORtg", normalize: (p: PlayerRating) => (p.offRating / maxOff) * 100 },
-      { key: "DRtg", normalize: (p: PlayerRating) => (minDef / p.defRating) * 100 },
-      { key: "MIN", normalize: (p: PlayerRating) => (p.min / maxMin) * 100 },
-      { key: "PIE", normalize: (p: PlayerRating) => (p.pie / maxPie) * 100 },
+      { key: "OWS", normalize: (p: PlayerRating) => (p.ows / maxOws) * 100 },
+      { key: "DWS", normalize: (p: PlayerRating) => (p.dws / maxDws) * 100 },
+      { key: "WS", normalize: (p: PlayerRating) => (p.ws / maxWs) * 100 },
       { key: "GP", normalize: (p: PlayerRating) => (p.gp / maxGp) * 100 },
     ];
 
@@ -80,7 +78,7 @@ export function ComparePageClient({ players }: Props) {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Compare Players</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Select up to 4 players to compare their ratings side by side
+          Select up to 4 players to compare their stats side by side
         </p>
       </div>
 
@@ -89,7 +87,7 @@ export function ComparePageClient({ players }: Props) {
           const teamInfo = NBA_TEAMS[player.teamAbbreviation];
           return (
             <Badge
-              key={player.playerId}
+              key={`${player.playerName}-${i}`}
               variant="outline"
               className="gap-1.5 py-1.5 pl-2.5 pr-1.5"
               style={{ borderColor: COLORS[i] }}
@@ -100,7 +98,7 @@ export function ComparePageClient({ players }: Props) {
               />
               {player.playerName}
               <button
-                onClick={() => removePlayer(player.playerId)}
+                onClick={() => removePlayer(i)}
                 className="ml-0.5 rounded-full p-0.5 hover:bg-accent"
               >
                 <X className="h-3 w-3" />
@@ -118,9 +116,9 @@ export function ComparePageClient({ players }: Props) {
             />
             {suggestions.length > 0 && (
               <div className="absolute z-50 mt-1 w-72 rounded-lg border border-border bg-card shadow-xl">
-                {suggestions.map((player) => (
+                {suggestions.map((player, idx) => (
                   <button
-                    key={player.playerId}
+                    key={`${player.playerName}-${player.teamAbbreviation}-${idx}`}
                     onClick={() => addPlayer(player)}
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                   >
@@ -150,7 +148,7 @@ export function ComparePageClient({ players }: Props) {
               <PolarRadiusAxis tick={false} axisLine={false} domain={[0, 100]} />
               {selected.map((player, i) => (
                 <Radar
-                  key={player.playerId}
+                  key={`${player.playerName}-${i}`}
                   name={player.playerName}
                   dataKey={player.playerName}
                   stroke={COLORS[i]}
@@ -181,7 +179,7 @@ export function ComparePageClient({ players }: Props) {
             const teamInfo = NBA_TEAMS[player.teamAbbreviation];
             return (
               <div
-                key={player.playerId}
+                key={`${player.playerName}-${i}`}
                 className="rounded-xl border bg-card p-4"
                 style={{ borderColor: COLORS[i] }}
               >
@@ -197,25 +195,14 @@ export function ComparePageClient({ players }: Props) {
                 </p>
                 <div className="mt-3 space-y-1.5">
                   {[
-                    { label: "ORtg", value: player.offRating.toFixed(1) },
-                    { label: "DRtg", value: player.defRating.toFixed(1) },
-                    {
-                      label: "NRtg",
-                      value: `${player.netRating > 0 ? "+" : ""}${player.netRating.toFixed(1)}`,
-                      color:
-                        player.netRating > 0
-                          ? "text-[var(--color-positive)]"
-                          : "text-[var(--color-negative)]",
-                    },
+                    { label: "OWS", value: player.ows.toFixed(1) },
+                    { label: "DWS", value: player.dws.toFixed(1) },
+                    { label: "WS", value: player.ws.toFixed(1) },
                     { label: "GP", value: player.gp.toString() },
-                    { label: "MIN", value: player.min.toFixed(1) },
-                    { label: "PIE", value: `${player.pie.toFixed(1)}%` },
                   ].map((stat) => (
                     <div key={stat.label} className="flex items-center justify-between">
                       <span className="text-xs text-muted-foreground">{stat.label}</span>
-                      <span
-                        className={`text-sm font-semibold tabular-nums ${stat.color || ""}`}
-                      >
+                      <span className="text-sm font-semibold tabular-nums">
                         {stat.value}
                       </span>
                     </div>
