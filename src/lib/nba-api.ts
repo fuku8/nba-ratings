@@ -2,6 +2,13 @@ import { TeamRating, PlayerRating, TEAM_NAME_TO_ABBR } from "./types";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
+// Basketball Reference abbreviation → standard NBA abbreviation
+const BR_ABBR_MAP: Record<string, string> = {
+  BRK: "BKN",
+  CHO: "CHA",
+  PHO: "PHX",
+};
+
 // ---------------------------------------------------------------------------
 // CSV data loading
 // ---------------------------------------------------------------------------
@@ -52,20 +59,30 @@ export async function getTeamRatings(): Promise<TeamRating[]> {
 export async function getPlayerRatings(teamAbbreviation?: string): Promise<PlayerRating[]> {
   const path = resolveDataPath("player_ratings.csv");
   if (!existsSync(path)) return [];
-  let rows = parseCSV(readFileSync(path, "utf-8"));
-  if (teamAbbreviation) {
-    rows = rows.filter((r) => r.TEAM_ID === teamAbbreviation);
-  }
+  const rows = parseCSV(readFileSync(path, "utf-8"));
   return rows
-    .filter((r) => r.PLAYER_NAME && r.PLAYER_NAME !== "Player")
-    .map((r) => ({
-      playerName: r.PLAYER_NAME,
-      teamAbbreviation: r.TEAM_ID || "",
-      gp: Number(r.GP) || 0,
-      ows: Number(r.OFF_RATING) || 0,
-      dws: Number(r.DEF_RATING) || 0,
-      ws: Number(r.NET_RATING) || 0,
-    }));
+    .filter((r) => {
+      if (!r.PLAYER_NAME || r.PLAYER_NAME === "Player") return false;
+      // Skip multi-team aggregate rows (2TM, 3TM, etc.)
+      const rawTeam = (r.TEAM_ID || "").trim();
+      if (/^\d+TM$/.test(rawTeam)) return false;
+      if (teamAbbreviation) {
+        const normalized = BR_ABBR_MAP[rawTeam] || rawTeam;
+        return normalized === teamAbbreviation;
+      }
+      return true;
+    })
+    .map((r) => {
+      const rawTeam = (r.TEAM_ID || "").trim();
+      return {
+        playerName: r.PLAYER_NAME,
+        teamAbbreviation: BR_ABBR_MAP[rawTeam] || rawTeam,
+        gp: Number(r.GP) || 0,
+        ows: Number(r.OFF_RATING) || 0,
+        dws: Number(r.DEF_RATING) || 0,
+        ws: Number(r.NET_RATING) || 0,
+      };
+    });
 }
 
 export async function searchPlayers(query: string): Promise<PlayerRating[]> {

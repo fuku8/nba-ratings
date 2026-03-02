@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -88,7 +89,10 @@ export function TeamRatingsTable({ teams }: Props) {
                   {i + 1}
                 </TableCell>
                 <TableCell>
-                  <span className="flex items-center gap-2">
+                  <Link
+                    href={`/team/${team.teamAbbreviation.toLowerCase()}`}
+                    className="flex items-center gap-2 group-hover:underline"
+                  >
                     <span
                       className="inline-block h-2.5 w-2.5 rounded-full"
                       style={{ backgroundColor: teamInfo?.darkColor || "#888" }}
@@ -97,7 +101,7 @@ export function TeamRatingsTable({ teams }: Props) {
                     <span className="text-xs text-muted-foreground">
                       {team.teamAbbreviation}
                     </span>
-                  </span>
+                  </Link>
                 </TableCell>
                 <TableCell className="text-right tabular-nums text-sm font-medium">
                   {team.offRating.toFixed(1)}
