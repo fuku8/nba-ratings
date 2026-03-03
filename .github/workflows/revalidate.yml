@@ -2,12 +2,10 @@ name: Update NBA Data
 
 on:
   schedule:
-    # Every day at 16:00 JST (07:00 UTC) - after most NBA games end
-    - cron: "0 7 * * *"
-    # Every day at 07:00 JST (22:00 UTC previous day) - morning refresh
-    - cron: "0 22 * * *"
-    # Every day at 21:00 JST (12:00 UTC) - evening refresh
-    - cron: "0 12 * * *"
+    # Every day at 21:30 JST (12:30 UTC)
+    - cron: "30 12 * * *"
+    # Every day at 05:30 JST (20:30 UTC)
+    - cron: "30 20 * * *"
   workflow_dispatch:
 
 jobs:
