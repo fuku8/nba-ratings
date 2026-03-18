@@ -25,6 +25,8 @@ jobs:
 
       - name: Fetch latest NBA data
         run: node scripts/fetch-data.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check for changes
         id: changes
