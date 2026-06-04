@@ -47,13 +47,16 @@ export async function getTeamRatings(): Promise<TeamRating[]> {
   const rows = parseCSV(readFileSync(path, "utf-8"));
   return rows
     .filter((r) => r.TEAM_NAME && r.TEAM_NAME !== "League Average")
-    .map((r) => ({
-      teamName: r.TEAM_NAME,
-      teamAbbreviation: TEAM_NAME_TO_ABBR[r.TEAM_NAME] || "",
-      offRating: Number(r.OFF_RATING) || 0,
-      defRating: Number(r.DEF_RATING) || 0,
-      netRating: Number(r.NET_RATING) || 0,
-    }));
+    .map((r) => {
+      const teamName = r.TEAM_NAME.replace(/\*/g, "").trim();
+      return {
+        teamName,
+        teamAbbreviation: TEAM_NAME_TO_ABBR[teamName] || "",
+        offRating: Number(r.OFF_RATING) || 0,
+        defRating: Number(r.DEF_RATING) || 0,
+        netRating: Number(r.NET_RATING) || 0,
+      };
+    });
 }
 
 export async function getPlayerRatings(teamAbbreviation?: string): Promise<PlayerRating[]> {
