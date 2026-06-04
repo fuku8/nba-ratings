@@ -1,11 +1,12 @@
 name: Update NBA Data
 
 on:
-  schedule:
-    # Every day at 21:30 JST (12:30 UTC)
-    - cron: "30 12 * * *"
-    # Every day at 05:30 JST (20:30 UTC)
-    - cron: "30 20 * * *"
+  # RS ended — scheduled data updates disabled
+  # schedule:
+  #   # Every day at 21:30 JST (12:30 UTC)
+  #   - cron: "30 12 * * *"
+  #   # Every day at 05:30 JST (20:30 UTC)
+  #   - cron: "30 20 * * *"
   workflow_dispatch:
 
 permissions:
